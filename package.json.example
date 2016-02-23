@@ -34,9 +34,9 @@
   },
   "jspm": {
     "directories": {
-      "baseURL": "mgg",
-      "lib": "mgg",
-      "packages": "mgg/libs"
+      "baseURL": "static",
+      "lib": "static",
+      "packages": "static/libs"
     },
     "dependencies": {
       "backbone": "npm:backbone@^1.2.1",
