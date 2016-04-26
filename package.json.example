@@ -1,5 +1,5 @@
 {
-  "name": "ES6 Demo App",
+  "name": "ES6-Demo-App",
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
@@ -20,13 +20,11 @@
     "gulp-cache": "^0.2.8",
     "gulp-define-module": "^0.1.1",
     "gulp-handlebars": "^3.0.1",
-    "gulp-jshint": "^1.9.2",
     "gulp-livereload": "^3.8.0",
     "gulp-load-plugins": "^0.8.0",
     "gulp-shell": "^0.3.0",
     "gulp-util": "^3.0.4",
     "jasmine-core": "^2.2.0",
-    "jshint-stylish": "^1.0.1",
     "jspm": "^0.14.0",
     "serve-index": "^1.6.2",
     "serve-static": "^1.9.1",
@@ -48,9 +46,11 @@
     }
   },
   "dependencies": {
+    "babel-eslint": "^6.0.4",
     "colors": "^1.1.2",
     "cookie-parser": "^1.4.1",
     "express": "^4.13.4",
+    "gulp-eslint": "^2.0.0",
     "gulp-live-server": "0.0.20",
     "gulp-nodemon": "^2.0.3",
     "path": "^0.12.7"

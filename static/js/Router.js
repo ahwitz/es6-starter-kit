@@ -1,14 +1,14 @@
 import Backbone from 'backbone';
 import $ from 'jquery';
 
-class Router extends Backbone.Router 
+class Router extends Backbone.Router
 {
-    constructor () 
+    constructor()
     {
         super();
     }
 
-    routes () 
+    routes()
     {
         return {
 

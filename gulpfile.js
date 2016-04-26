@@ -1,6 +1,3 @@
-/* jshint node:true */
-'use strict';
-
 var static_location = "static";
 var livereload_port = 35729;
 var static_port = 9000;
@@ -11,6 +8,7 @@ var $ = require('gulp-load-plugins')();
 var shell = require('gulp-shell');
 var livereload = require('gulp-livereload');
 var nodemon = require('gulp-nodemon');
+var eslint = require('gulp-eslint');
 
 // server business
 var express = require('express');
@@ -34,12 +32,12 @@ gulp.task("develop:babel", function () {
         .pipe(gulp.dest("dist"));
 });
 
-gulp.task('develop:jshint', function (callback)
+gulp.task('eslint', function (callback)
 {
     return gulp.src([static_location + '/js/**/*.js'])
-        .pipe($.jshint({lookup: true, devel: true, esnext: true}))
-        .pipe($.jshint.reporter('jshint-stylish'))
-        .pipe($.jshint.reporter('fail'));
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
 
 gulp.task('develop:server', function()
@@ -51,11 +49,13 @@ gulp.task('develop', function() {
     gulp.start('develop:server');
     gulp.start('develop:templates');
     gulp.start('develop:styles');
+    gulp.start('eslint');
 
     $.livereload.listen();
 
     staticInit();
 
+    gulp.watch(static_location + '/js/**/*.js', ['eslint']);
     gulp.watch([
         static_location + '/js/**/*.js',
         static_location + '/index.html', //will change when any templates change via develop:templates
@@ -63,7 +63,6 @@ gulp.task('develop', function() {
     ]).on('change', $.livereload.changed);
 
     gulp.watch(static_location + '/templates/**/*.html', ['develop:templates']);
-    gulp.watch(static_location + '/js/**/*.js', ['develop:jshint']);
     gulp.watch(static_location + '/css/app.scss', ['develop:styles']);
 });
 

@@ -3,28 +3,49 @@ import Marionette from 'backbone.marionette';
 
 import Router from './Router';
 
-class MGGClient extends Marionette.Application
+class ES6StarterApp extends Marionette.Application
 {
-	initialize(options)
-	{
-        new Router();
+    initialize(options)
+    {
+        this.router = new Router();
         Backbone.history.start();
-
-		console.log("Initialized?");
-		// var view = new MGGView();
-		// var articlesView = new ArticlesView({
-  //   		collection: [
-		// 	    { name: 'Hallo, Welt!' },
-		// 	    { name: 'Hello, World!' },
-		// 	    { name: 'Bienvenue au monde!' }
-		// 	]
-		// });
-		// this.addRegions({
-		// 	mainRegion: "#app"
-		// });
-		// var mggView = new MGGView();
-		// this.mainRegion.show(mggView);
-	}
+        this.rootView = new RootView({});
+    }
 }
 
-export default MGGClient;
+class RootView extends Marionette.LayoutView
+{
+    constructor(options)
+    {
+        options.template = "#root-view";
+        options.el = "#app";
+        options.regions = {
+            'sample': "#sub",
+            'notroot': "#root"
+        };
+        super(options);
+        this.render();
+        this.showChildView('notroot', new NotRootView({}));
+        this.showChildView('sample', new SampleView({}));
+    }
+}
+
+class NotRootView extends Marionette.ItemView
+{
+    constructor(options)
+    {
+        options.template = "#not-root-view";
+        super(options);
+    }
+}
+
+class SampleView extends Marionette.ItemView
+{
+    constructor(options)
+    {
+        options.template = "#sub-view";
+        super(options);
+    }
+}
+
+export default ES6StarterApp;
