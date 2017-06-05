@@ -48,4 +48,7 @@ class SampleView extends Marionette.ItemView
     }
 }
 
-export default ES6StarterApp;
+export const staticInit = () => {
+    var app = new ES6StarterApp({});
+    app.start();
+};

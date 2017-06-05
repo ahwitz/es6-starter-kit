@@ -1,6 +1,7 @@
-static/libs/*
 node_modules/*
-static/index.html
+static/libs/*
+static/templates.html
 static/css/*
+static/js/Root.js
 !static/css/*.scss
 package.json

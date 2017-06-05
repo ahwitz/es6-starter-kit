@@ -1,6 +1,7 @@
-var static_location = "static";
-var livereload_port = 35729;
-var static_port = 9000;
+var config = require("./server/lib/config.js");
+var static_location = config.static_location;
+var livereload_port = config.livereload_port;
+var static_port = config.static_port;
 
 var colors = require('colors'); //because I'm anal about this stuff
 var gulp = require('gulp');
@@ -17,15 +18,57 @@ var cookieParser = require('cookie-parser');
 var path = require('path');
 var static_app, static_server;
 
-gulp.task('develop:templates', shell.task([
-    'python lib/build-templates.py -b ' + static_location + '/templates/index.html -t ' + static_location + '/templates/views ' + static_location
+gulp.task('default', function()
+{
+    gulp.start('develop');
+});
+
+gulp.task('develop', function() {
+    gulp.start('develop:server');
+    gulp.start('templates');
+    gulp.start('develop:styles');
+    gulp.start('develop:js');
+
+    $.livereload.listen({port: livereload_port});
+
+    staticInit();
+
+    gulp.watch(static_location + '/js/Index.js', ['develop:js']); // updates should trigger a reload of the Root file when we're in develop mode
+    gulp.watch(static_location + '/js/**/*.js', ['eslint']);
+    gulp.watch([
+        static_location + '/js/**/*.js',
+        static_location + '/index.html', 
+        static_location + '/templates.html', //will change when any templates change
+        static_location + '/css/app.css'
+    ]).on('change', $.livereload.changed);
+
+    gulp.watch(static_location + '/templates/**/*.html', ['templates']);
+    gulp.watch(static_location + '/css/app.scss', ['develop:styles']);
+});
+
+gulp.task('build', function()
+{
+    gulp.start('templates');
+    gulp.start('styles');
+    gulp.start('eslint');
+    gulp.start('build:js');
+});
+
+/**
+ * Underscore template building
+ */
+gulp.task('templates', shell.task([
+    'python lib/build-templates.py -b ' + static_location + '/templates/templates.html -t ' + static_location + '/templates/views -f templates.html ' + static_location
 ]));
 
+/**
+ * Style compilation
+ */
 gulp.task('develop:styles', shell.task([
     'sassc -m ' + static_location + '/css/app.scss ' + static_location + '/css/app.css'
 ]));
 
-//Prod task
+// Prod task
 gulp.task("develop:babel", function () {
     return gulp.src(static_location + "/**/*.js")
         .pipe(babel())
@@ -45,31 +88,32 @@ gulp.task('develop:server', function()
     // nothing as of yet: see nodemon below
 });
 
-gulp.task('develop', function() {
-    gulp.start('develop:server');
-    gulp.start('develop:templates');
-    gulp.start('develop:styles');
-    gulp.start('eslint');
+/**
+ * Javascript manipulation to make sure Root.js is the desired file
+ */
 
-    $.livereload.listen();
-
-    staticInit();
-
-    gulp.watch(static_location + '/js/**/*.js', ['eslint']);
-    gulp.watch([
-        static_location + '/js/**/*.js',
-        static_location + '/index.html', //will change when any templates change via develop:templates
-        static_location + '/css/app.css'
-    ]).on('change', $.livereload.changed);
-
-    gulp.watch(static_location + '/templates/**/*.html', ['develop:templates']);
-    gulp.watch(static_location + '/css/app.scss', ['develop:styles']);
-});
-
-gulp.task('default', function()
+var buildJS = function(root)
 {
-    gulp.start('develop');
+    var Builder = require('systemjs-builder');
+    var builder = new Builder('./' + static_location, './' + static_location + '/config.js');
+    builder.buildStatic('./' + static_location + '/js/' + root + '.js', './' + static_location + '/js/Root.js', { minify: true })
+    .then(function() {
+      console.log('Build complete at', new Date(), '.');
+    })
+    .catch(function(err) {
+      console.log('Build error:');
+      console.log(err);
+    });
+};
+gulp.task('develop:js', shell.task([
+    'cp ' + static_location + '/js/Index.js  ' + static_location + '/js/Root.js'
+]));
+
+gulp.task('build:js', function()
+{
+    buildJS("Index");
 });
+
 
 function staticInit()
 {

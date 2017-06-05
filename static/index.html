@@ -15,22 +15,9 @@
     <div id="app">
     </div>
 
-    {templates}
-
     <!--<script src="scripts/app.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/libs/system.js"></script>
     <script type="text/javascript" src="/config.js"></script>
-    <script>
-        System.config({{
-            baseURL: '/'
-        }});
-
-        System.import('js/Index').then(function(application)
-        {{
-            var ES6StarterApp = application.default;
-            var app = new ES6StarterApp();
-            app.start();
-        }});
-    </script>
+    <script type="text/javascript" src="/js/preload.js"></script>
 </body>
 </html>
