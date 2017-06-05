@@ -10,6 +10,8 @@ var shell = require('gulp-shell');
 var livereload = require('gulp-livereload');
 var nodemon = require('gulp-nodemon');
 var eslint = require('gulp-eslint');
+var autoprefixer = require('gulp-autoprefixer');
+var sass = require('gulp-sass');
 
 // server business
 var express = require('express');
@@ -26,7 +28,7 @@ gulp.task('default', function()
 gulp.task('develop', function() {
     gulp.start('develop:server');
     gulp.start('templates');
-    gulp.start('develop:styles');
+    gulp.start('styles');
     gulp.start('develop:js');
 
     $.livereload.listen({port: livereload_port});
@@ -43,7 +45,7 @@ gulp.task('develop', function() {
     ]).on('change', $.livereload.changed);
 
     gulp.watch(static_location + '/templates/**/*.html', ['templates']);
-    gulp.watch(static_location + '/css/app.scss', ['develop:styles']);
+    gulp.watch(static_location + '/css/app.scss', ['styles']);
 });
 
 gulp.task('build', function()
@@ -64,9 +66,25 @@ gulp.task('templates', shell.task([
 /**
  * Style compilation
  */
-gulp.task('develop:styles', shell.task([
-    'sassc -m ' + static_location + '/css/app.scss ' + static_location + '/css/app.css'
-]));
+gulp.task('styles', function() {
+    return gulp
+        .src(static_location + "/css/app.scss")
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoprefixer({
+            browsers: [
+                'ie >= 11',
+                'ie_mob >= 11',
+                'ff >= 30',
+                'chrome >= 21',
+                'safari >= 8',
+                'opera >= 23',
+                'ios >= 8',
+                'android >= 4.4',
+                'bb >= 10'
+            ]
+        }))
+        .pipe(gulp.dest(static_location + "/css/"), {overwrite: true});
+});
 
 // Prod task
 gulp.task("develop:babel", function () {

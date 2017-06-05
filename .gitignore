@@ -4,4 +4,3 @@ static/templates.html
 static/css/*
 static/js/Root.js
 !static/css/*.scss
-package.json
